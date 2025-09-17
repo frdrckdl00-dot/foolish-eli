@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lyrics Viewer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      overflow: hidden;
+    }
+    #lyric {
+      font-size: 1.8rem;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+    }
+    audio { display: none; } /* hide player */
+  </style>
+</head>
+<body>
+
+<audio id="audio" autoplay>
+  <source src="foolishone.mp3" type="audio/mpeg">
+</audio>
+
+<div id="lyric"></div>
+
+<script>
+/* Each entry = {text: "...", duration: seconds} 
+   duration = how long to show before moving to next */
+const lyrics = [
+  {text: "You know how to keep me waitin'", duration: 2},
+  {text: "I know how to act like I'm fine", duration: 3},
+  {text: "Don't know what to call this situation", duration: 4},
+  {text: "But I know I can't call you mine", duration: 1.5},
+  {text: "And it's delicate, but I will do my best to seem bulletproof", duration: 5.5},
+  {text: "", duration: 3}, // blank pause
+  {text: "'Cause when my head is on your shoulder", duration: 3},
+  {text: "It starts thinkin' you'll come around", duration: 2},
+  {text: "And maybe, someday, when we're older", duration: 2.7},
+  {text: "This is something we'll laugh about", duration: 2},
+  {text: "Over coffee every mornin' while you're watching the news", duration: 6},
+  {text: "", duration: 2}, // blank pause
+  {text: 'But then the voices say, "You are not the exception', duration: 6},
+  {text: 'You will never learn your lesson"', duration: 5},
+  {text: "Foolish one", duration: 1.5},
+  {text: "Stop checkin' your mailbox for confessions of love", duration: 5},
+  {text: "That ain't never gonna come", duration: 3},
+  {text: "You will take the long way, you will take the long way down", duration: 6}
+];
+
+const lyricDiv = document.getElementById('lyric');
+const audio = document.getElementById('audio');
+
+let index = 0;
+
+function showLyric(i) {
+  lyricDiv.style.opacity = 0;
+  setTimeout(() => {
+    lyricDiv.textContent = lyrics[i].text;
+    lyricDiv.style.opacity = 1;
+  }, 500);
+}
+
+audio.addEventListener('play', () => {
+  // start displaying lyrics based on durations
+  index = 0;
+  showLyric(index);
+  let timeOffset = 0;
+  lyrics.forEach((line, i) => {
+    timeOffset += line.duration * 1000;
+    if (i < lyrics.length - 1) {
+      setTimeout(() => {
+        index = i + 1;
+        showLyric(index);
+      }, timeOffset);
+    }
+  });
+});
+</script>
+
+</body>
+</html>
