@@ -3,89 +3,95 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lyrics Viewer</title>
+  <title>Foolish One – Lyrics Viewer</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
   <style>
     body {
       background-color: #000;
       color: #fff;
       font-family: 'Poppins', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       text-align: center;
-      overflow: hidden;
+      padding: 40px;
     }
-    #lyric {
-      font-size: 1.8rem;
-      opacity: 0;
-      transition: opacity 0.8s ease-in-out;
+    h1 {
+      margin-bottom: 20px;
     }
-    audio { display: none; } /* hide player */
+    audio {
+      margin-bottom: 30px;
+    }
+    .lyric-line {
+      font-size: 1.5rem;
+      margin: 10px 0;
+      transition: color 0.3s;
+    }
+    .active {
+      color: #00ffcc; /* highlight colour */
+    }
+    .time {
+      font-size: 1rem;
+      color: #aaa;
+      margin-right: 8px;
+    }
   </style>
 </head>
 <body>
+  <h1>Foolish One – Taylor Swift</h1>
 
-<audio id="audio" autoplay>
-  <source src="foolishone.mp3" type="audio/mpeg">
-</audio>
+  <!-- Audio player that autoplays -->
+  <audio id="audio" autoplay controls>
+    <source src="foolish-one.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
 
-<div id="lyric"></div>
+  <div id="lyrics"></div>
 
-<script>
-/* Each entry = {text: "...", duration: seconds} 
-   duration = how long to show before moving to next */
-const lyrics = [
-  {text: "You know how to keep me waitin'", duration: 2},
-  {text: "I know how to act like I'm fine", duration: 3},
-  {text: "Don't know what to call this situation", duration: 4},
-  {text: "But I know I can't call you mine", duration: 1.5},
-  {text: "And it's delicate, but I will do my best to seem bulletproof", duration: 5.5},
-  {text: "", duration: 3}, // blank pause
-  {text: "'Cause when my head is on your shoulder", duration: 3},
-  {text: "It starts thinkin' you'll come around", duration: 2},
-  {text: "And maybe, someday, when we're older", duration: 2.7},
-  {text: "This is something we'll laugh about", duration: 2},
-  {text: "Over coffee every mornin' while you're watching the news", duration: 6},
-  {text: "", duration: 2}, // blank pause
-  {text: 'But then the voices say, "You are not the exception', duration: 6},
-  {text: 'You will never learn your lesson"', duration: 5},
-  {text: "Foolish one", duration: 1.5},
-  {text: "Stop checkin' your mailbox for confessions of love", duration: 5},
-  {text: "That ain't never gonna come", duration: 3},
-  {text: "You will take the long way, you will take the long way down", duration: 6}
-];
+  <script>
+    // Lyrics with dummy times — change time values to your real times in seconds
+    const lyrics = [
+      { time: 0, text: "You know how to keep me waitin'" },
+      { time: 7, text: "I know how to act like I'm fine" },
+      { time: 14, text: "Don't know what to call this situation" },
+      { time: 21, text: "But I know I can't call you mine" },
+      { time: 28, text: "And it's delicate, but I will do my best to seem bulletproof" },
+      { time: 36, text: "'Cause when my head is on your shoulder" },
+      { time: 42, text: "It starts thinkin' you'll come around" },
+      { time: 49, text: "And maybe, someday, when we're older" },
+      { time: 56, text: "This is something we'll laugh about" },
+      { time: 63, text: "Over coffee every mornin' while you're watching the news" },
+      { time: 71, text: "But then the voices say, \"You are not the exception" },
+      { time: 78, text: "You will never learn your lesson\"" },
+      { time: 85, text: "Foolish one" },
+      { time: 90, text: "Stop checkin' your mailbox for confessions of love" },
+      { time: 98, text: "That ain't never gonna come" },
+      { time: 104, text: "You will take the long way, you will take the long way down" },
+    ];
 
-const lyricDiv = document.getElementById('lyric');
-const audio = document.getElementById('audio');
+    const lyricsContainer = document.getElementById('lyrics');
 
-let index = 0;
+    // render lines with times
+    lyrics.forEach((line, index) => {
+      const div = document.createElement('div');
+      div.className = 'lyric-line';
+      div.id = 'line' + index;
+      div.innerHTML = `<span class="time">[${new Date(line.time*1000).toISOString().substr(14,5)}]</span>${line.text}`;
+      lyricsContainer.appendChild(div);
+    });
 
-function showLyric(i) {
-  lyricDiv.style.opacity = 0;
-  setTimeout(() => {
-    lyricDiv.textContent = lyrics[i].text;
-    lyricDiv.style.opacity = 1;
-  }, 500);
-}
+    const audio = document.getElementById('audio');
 
-audio.addEventListener('play', () => {
-  // start displaying lyrics based on durations
-  index = 0;
-  showLyric(index);
-  let timeOffset = 0;
-  lyrics.forEach((line, i) => {
-    timeOffset += line.duration * 1000;
-    if (i < lyrics.length - 1) {
-      setTimeout(() => {
-        index = i + 1;
-        showLyric(index);
-      }, timeOffset);
-    }
-  });
-});
-</script>
-
+    // highlight active line while playing
+    audio.addEventListener('timeupdate', () => {
+      const currentTime = audio.currentTime;
+      lyrics.forEach((line, index) => {
+        const nextTime = lyrics[index + 1] ? lyrics[index + 1].time : Infinity;
+        const div = document.getElementById('line' + index);
+        if (currentTime >= line.time && currentTime < nextTime) {
+          div.classList.add('active');
+        } else {
+          div.classList.remove('active');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
